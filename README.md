@@ -75,6 +75,14 @@ govulncheck ./...
 gosec ./...
 ```
 
+Nuance: on some setups `govulncheck` can crash with an internal loader error (e.g. missing types). If that happens, update `govulncheck` and/or run it in binary mode:
+
+```bash
+go install golang.org/x/vuln/cmd/govulncheck@latest
+go build -o gufwie ./cmd/gufwie
+govulncheck -mode=binary ./gufwie
+```
+
 ## Build (linux/amd64)
 
 ```bash
