@@ -25,6 +25,12 @@ go install github.com/rbelshevitz/gufwie/cmd/gufwie@latest
 sudo gufwie
 ```
 
+Print version:
+
+```bash
+gufwie --version
+```
+
 ## Service/Profile mode
 
 UFW supports *application profiles* (e.g. `OpenSSH`, `Nginx Full`). `gufwie` can add rules by selecting a profile instead of typing ports.
