@@ -32,7 +32,10 @@ jobs:
         with:
           go-version: "1.22.x"
           cache: true
-      - uses: securego/gosec@master
-        with:
-          args: ./...
-
+      - name: Install gosec
+        run: go install github.com/securego/gosec/v2/cmd/gosec@v2.22.10
+      - name: Run gosec
+        run: |
+          # This project intentionally shells out to `ufw` and a clipboard helper.
+          # Exclude G204 (subprocess launched with variable).
+          gosec -exclude=G204 ./...
