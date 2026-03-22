@@ -83,6 +83,8 @@ go build -o gufwie ./cmd/gufwie
 govulncheck -mode=binary ./gufwie
 ```
 
+Nuance: `govulncheck -mode=binary` reports vulnerabilities in the Go standard library that was used to build the binary. If it reports a standard-library issue, rebuild with a patched Go toolchain (check `go version`).
+
 ## Build (linux/amd64)
 
 ```bash
