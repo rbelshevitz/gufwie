@@ -9,7 +9,7 @@ It’s meant for the “I just need to quickly understand what’s open and make
 
 ## Requirements
 
-- Linux with `ufw` (on Windows, run inside **WSL2/Ubuntu**)
+- Linux with `ufw` (on Windows, run inside WSL2/Ubuntu)
 - Run with privileges (usually `sudo`)
 - Tested with `ufw` `0.36.2` (older versions may work)
 
