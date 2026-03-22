@@ -1,6 +1,5 @@
 # gufwie
 
-![CI](https://github.com/rbelshevitz/gufwie/actions/workflows/ci.yml/badge.svg)
 ![Security](https://github.com/rbelshevitz/gufwie/actions/workflows/security.yml/badge.svg)
 
 `gufwie` is an `nmtui`-style TUI for **UFW** (Uncomplicated Firewall): it **views and changes firewall rules** on your machine.
