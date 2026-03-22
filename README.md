@@ -3,7 +3,7 @@
 ![CI](https://github.com/rbelshevitz/gufwie/actions/workflows/ci.yml/badge.svg)
 ![Security](https://github.com/rbelshevitz/gufwie/actions/workflows/security.yml/badge.svg)
 
-`gufwie` is an `nmtui`-style TUI for **UFW**: browse rules, search, inspect details, and apply common changes with confirmations.
+`gufwie` is an `nmtui`-style TUI for **UFW** (Uncomplicated Firewall): it **views and changes firewall rules** on your machine.
 
 It’s meant for the “I just need to quickly understand what’s open and make one safe change” workflow, without remembering UFW’s exact syntax or dealing with numbered deletes in a shell.
 
@@ -56,7 +56,13 @@ Safety: potentially dangerous actions require confirmation and default to **No**
 
 ## Security / audit
 
-This tool needs `sudo` because `ufw` needs it. `gufwie` itself does not open network sockets and only shells out to `ufw` with arguments you approve in the UI.
+This tool needs `sudo` because `ufw` needs it, and it can change your firewall configuration. `gufwie` itself does not open network sockets and only shells out to `ufw` with arguments you approve in the UI.
+
+If you’re cautious, start by running it in read-only mode:
+
+```bash
+sudo gufwie --dry-run
+```
 
 If you want to audit:
 

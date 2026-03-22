@@ -2,6 +2,7 @@ package appui
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -51,6 +52,9 @@ func Run(client Client, logger *log.Logger) error {
 		client: client,
 		logger: logger,
 		model:  model{filter: ""},
+	}
+	if dr, ok := client.(interface{ IsDryRun() bool }); ok {
+		u.model.dryRun = dr.IsDryRun()
 	}
 
 	u.statusBar = tview.NewTextView().SetDynamicColors(true).SetWrap(false)
@@ -121,6 +125,13 @@ func (u *ui) runAsync(label string, fn func(ctx context.Context) error, onDone .
 		if len(onDone) > 0 {
 			u.queueDraw(func() { onDone[0](err) })
 		} else if err != nil {
+			var dre *ufw.DryRunError
+			if errors.As(err, &dre) {
+				u.queueDraw(func() {
+					u.showDialogHelp("Dry-run", dre.Cmd)
+				})
+				return
+			}
 			u.queueDraw(func() {
 				u.showError(err)
 			})

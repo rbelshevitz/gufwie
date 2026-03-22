@@ -31,7 +31,11 @@ func (u *ui) renderStatus() {
 	if u.model.filter != "" {
 		filter = fmt.Sprintf("  Search: [#00afaf]%s[-]", tview.Escape(u.model.filter))
 	}
-	u.statusBar.SetText(fmt.Sprintf("[#00afaf]gufwie[-]  UFW: %s  Rules: %d  Showing: %d%s", state, len(u.model.rules), len(u.model.indexMap), filter))
+	mode := ""
+	if u.model.dryRun {
+		mode = "  [#d7af00]DRY-RUN[-]"
+	}
+	u.statusBar.SetText(fmt.Sprintf("[#00afaf]gufwie[-]  UFW: %s%s  Rules: %d  Showing: %d%s", state, mode, len(u.model.rules), len(u.model.indexMap), filter))
 }
 
 func (u *ui) renderTable() {

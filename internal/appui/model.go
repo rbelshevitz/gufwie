@@ -11,6 +11,7 @@ type model struct {
 	rules  []ufw.Rule
 
 	filter string
+	dryRun bool
 
 	// indexMap maps visible table row (1-based, excluding header) to rules index.
 	indexMap []int
@@ -50,4 +51,3 @@ func (m *model) ruleForRow(row int) (ufw.Rule, bool) {
 	}
 	return m.rules[ridx], true
 }
-

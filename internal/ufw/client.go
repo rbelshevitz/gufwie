@@ -16,7 +16,9 @@ const (
 )
 
 type Config struct {
-	// Reserved for future options (sudo, timeouts, etc).
+	// DryRun prevents any changes to the firewall.
+	// Read-only commands (status/app list/info) still run normally.
+	DryRun bool
 }
 
 type Runner interface {
@@ -31,6 +33,8 @@ type Client struct {
 func NewClient(runner Runner, cfg Config) *Client {
 	return &Client{runner: runner, cfg: cfg}
 }
+
+func (c *Client) IsDryRun() bool { return c.cfg.DryRun }
 
 func (c *Client) Status(ctx context.Context) (Status, error) {
 	out, err := c.run(ctx, "status")
@@ -76,21 +80,33 @@ func (c *Client) ApplyApp(ctx context.Context, action Action, profile string) er
 	if strings.TrimSpace(profile) == "" {
 		return fmt.Errorf("empty profile")
 	}
+	if c.cfg.DryRun {
+		return &DryRunError{Cmd: FormatCommand(action, []string{profile})}
+	}
 	_, err := c.run(ctx, string(action), profile)
 	return err
 }
 
 func (c *Client) Enable(ctx context.Context) error {
+	if c.cfg.DryRun {
+		return &DryRunError{Cmd: FormatUfwArgs([]string{"--force", "enable"})}
+	}
 	_, err := c.run(ctx, "--force", "enable")
 	return err
 }
 
 func (c *Client) Disable(ctx context.Context) error {
+	if c.cfg.DryRun {
+		return &DryRunError{Cmd: FormatUfwArgs([]string{"disable"})}
+	}
 	_, err := c.run(ctx, "disable")
 	return err
 }
 
 func (c *Client) Reload(ctx context.Context) error {
+	if c.cfg.DryRun {
+		return &DryRunError{Cmd: FormatUfwArgs([]string{"reload"})}
+	}
 	_, err := c.run(ctx, "reload")
 	return err
 }
@@ -98,6 +114,9 @@ func (c *Client) Reload(ctx context.Context) error {
 func (c *Client) DeleteNumber(ctx context.Context, number int) error {
 	if number <= 0 {
 		return fmt.Errorf("invalid rule number: %d", number)
+	}
+	if c.cfg.DryRun {
+		return &DryRunError{Cmd: FormatUfwArgs([]string{"--force", "delete", fmt.Sprintf("%d", number)})}
 	}
 	_, err := c.run(ctx, "--force", "delete", fmt.Sprintf("%d", number))
 	return err
@@ -111,6 +130,9 @@ func (c *Client) Apply(ctx context.Context, action Action, args []string) error 
 	}
 	if len(args) == 0 {
 		return fmt.Errorf("empty args")
+	}
+	if c.cfg.DryRun {
+		return &DryRunError{Cmd: FormatCommand(action, args)}
 	}
 	argv := append([]string{string(action)}, args...)
 	_, err := c.run(ctx, argv...)

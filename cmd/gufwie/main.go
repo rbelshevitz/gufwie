@@ -12,6 +12,7 @@ import (
 
 func main() {
 	showVersion := flag.Bool("version", false, "print version and exit")
+	dryRun := flag.Bool("dry-run", false, "do not make any firewall changes (shows commands instead)")
 	flag.Parse()
 	if *showVersion {
 		_, _ = os.Stdout.WriteString("gufwie " + version.Version + "\n")
@@ -19,7 +20,7 @@ func main() {
 	}
 
 	logger := log.New(os.Stderr, "", log.LstdFlags)
-	client := ufw.NewClient(ufw.NewExecRunner(), ufw.Config{})
+	client := ufw.NewClient(ufw.NewExecRunner(), ufw.Config{DryRun: *dryRun})
 	if err := appui.Run(client, logger); err != nil {
 		logger.Printf("fatal: %v\n", err)
 		os.Exit(1)
