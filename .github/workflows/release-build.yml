@@ -1,0 +1,43 @@
+name: Release Build
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        goos: [linux]
+        goarch: [amd64, arm64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22.x"
+          cache: true
+
+      - run: go test ./...
+      - run: |
+          mkdir -p dist
+          BIN="gufwie_${{ matrix.goos }}_${{ matrix.goarch }}"
+          OUT="dist/${BIN}"
+          CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} \
+            go build -trimpath \
+              -ldflags "-s -w -X github.com/rbelshevitz/gufwie/internal/version.Version=${GITHUB_REF_NAME} -X github.com/rbelshevitz/gufwie/internal/version.Commit=${GITHUB_SHA} -X github.com/rbelshevitz/gufwie/internal/version.Date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+              -o "${OUT}" \
+              ./cmd/gufwie
+          sha256sum "${OUT}" > "${OUT}.sha256"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gufwie_${{ matrix.goos }}_${{ matrix.goarch }}
+          path: dist/
+

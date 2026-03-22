@@ -15,7 +15,11 @@ func main() {
 	dryRun := flag.Bool("dry-run", false, "do not make any firewall changes (shows commands instead)")
 	flag.Parse()
 	if *showVersion {
-		_, _ = os.Stdout.WriteString("gufwie " + version.Version + "\n")
+		line := "gufwie " + version.Version
+		if version.Commit != "" && version.Commit != "dev" {
+			line += " (" + version.Commit + ")"
+		}
+		_, _ = os.Stdout.WriteString(line + "\n")
 		return
 	}
 
