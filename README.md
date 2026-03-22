@@ -44,3 +44,9 @@ To get more profiles, install software that ships them (commonly `nginx`, `apach
 - `Tab` / `Shift-Tab` cycle focus (no mouse required)
 
 Safety: potentially dangerous actions require confirmation and default to **No**.
+
+## Build (linux/amd64)
+
+```bash
+GOOS=linux GOARCH=amd64 go build -o gufwie ./cmd/gufwie
+```
