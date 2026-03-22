@@ -67,6 +67,7 @@ sudo gufwie --dry-run
 If you want to audit:
 
 ```bash
+## Run these on Linux (or inside WSL2/Ubuntu).
 rg -n "exec\\.Command|Run\\(ctx.*\\\"ufw\\\"" internal
 go test ./...
 go vet ./...
