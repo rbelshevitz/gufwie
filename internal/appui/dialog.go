@@ -26,9 +26,11 @@ func (u *ui) showDialogPage(pageName, title, body string, buttons []string, defa
 	}
 
 	text := tview.NewTextView().
-		SetDynamicColors(true).
+		// Dialog bodies often include raw ufw output like "[ 1]" or errors with "[...]" argv.
+		// With DynamicColors enabled, tview treats '[' as markup and can garble rendering.
+		SetDynamicColors(false).
 		SetWrap(true).
-		SetText(strings.TrimSpace(body))
+		SetText(strings.TrimSpace(strings.NewReplacer("\r\n", "\n", "\r", "\n").Replace(body)))
 	text.SetBorder(true).SetTitle(windowTitle(title)).SetTitleAlign(tview.AlignLeft)
 
 	btns := tview.NewForm()

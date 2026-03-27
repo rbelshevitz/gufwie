@@ -1,6 +1,7 @@
 package appui
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/rivo/tview"
@@ -9,7 +10,28 @@ import (
 )
 
 func (u *ui) showError(err error) {
-	u.logger.Printf("error: %v\n", err)
+	var npe *ufw.NotPrivilegedError
+	if errors.As(err, &npe) {
+		detail := strings.TrimSpace(npe.Detail)
+		if detail == "" {
+			detail = npe.Error()
+		}
+		body := strings.Join([]string{
+			"This tool talks to `ufw`, which requires root privileges.",
+			"",
+			"Re-run with sudo:",
+			"  sudo gufwie",
+			"",
+			"Details:",
+			"  " + detail,
+		}, "\n")
+		u.showDialog("Insufficient privileges", body, []string{"Quit", "Continue"}, 0, func(btn string) {
+			if btn == "Quit" {
+				u.app.Stop()
+			}
+		})
+		return
+	}
 	u.showModal("Error", err.Error(), []string{"OK"}, func(string) {})
 }
 

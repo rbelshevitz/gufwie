@@ -148,7 +148,11 @@ func (c *Client) run(ctx context.Context, args ...string) (string, error) {
 		if stderr == "" {
 			stderr = stdout
 		}
-		return "", fmt.Errorf("ufw %v failed (exit=%d): %s", args, code, trimOneLine(stderr))
+		detail := trimOneLine(stderr)
+		if isNotPrivilegedMessage(detail) {
+			return "", &NotPrivilegedError{Args: args, Detail: detail}
+		}
+		return "", fmt.Errorf("ufw %v failed (exit=%d): %s", args, code, detail)
 	}
 	out := stdout
 	if strings.TrimSpace(out) == "" && strings.TrimSpace(stderr) != "" {
